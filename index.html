@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code スキルカタログ — 業務iOS開発環境の実例</title>
+<style>
+:root {
+  --bg: #FBFAF7;
+  --surface: #FFFFFF;
+  --ink: #23282E;
+  --muted: #6E6A63;
+  --accent: #31597F;
+  --accent-ink: #274763;
+  --border: #E5E1D8;
+  --border-soft: #EEEBE3;
+  --code-bg: #F1EEE6;
+  --team-bg: #E3EBF3; --team-fg: #274763;
+  --verify-bg: #E2EFEA; --verify-fg: #245C48;
+  --router-bg: #F3EBDD; --router-fg: #7A5A24;
+  --solo-bg: #ECEAE4; --solo-fg: #5A564E;
+  --none-fg: #8B877E;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15181C;
+    --surface: #1C2025;
+    --ink: #E9E7E1;
+    --muted: #9A968E;
+    --accent: #85AACB;
+    --accent-ink: #A9C6DE;
+    --border: #2E333A;
+    --border-soft: #262B31;
+    --code-bg: #262A30;
+    --team-bg: #253442; --team-fg: #A9C6DE;
+    --verify-bg: #22362E; --verify-fg: #93C6AF;
+    --router-bg: #3A3222; --router-fg: #D6B87A;
+    --solo-bg: #2A2D31; --solo-fg: #B3AFA7;
+    --none-fg: #7A766E;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15181C; --surface: #1C2025; --ink: #E9E7E1; --muted: #9A968E;
+  --accent: #85AACB; --accent-ink: #A9C6DE; --border: #2E333A; --border-soft: #262B31;
+  --code-bg: #262A30;
+  --team-bg: #253442; --team-fg: #A9C6DE;
+  --verify-bg: #22362E; --verify-fg: #93C6AF;
+  --router-bg: #3A3222; --router-fg: #D6B87A;
+  --solo-bg: #2A2D31; --solo-fg: #B3AFA7;
+  --none-fg: #7A766E;
+}
+:root[data-theme="light"] {
+  --bg: #FBFAF7; --surface: #FFFFFF; --ink: #23282E; --muted: #6E6A63;
+  --accent: #31597F; --accent-ink: #274763; --border: #E5E1D8; --border-soft: #EEEBE3;
+  --code-bg: #F1EEE6;
+  --team-bg: #E3EBF3; --team-fg: #274763;
+  --verify-bg: #E2EFEA; --verify-fg: #245C48;
+  --router-bg: #F3EBDD; --router-fg: #7A5A24;
+  --solo-bg: #ECEAE4; --solo-fg: #5A564E;
+  --none-fg: #8B877E;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+  margin: 0;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 48px 28px 96px; }
+
+header.site { border-bottom: 1px solid var(--border); padding-bottom: 28px; margin-bottom: 12px; }
+.eyebrow {
+  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600; margin: 0 0 10px;
+}
+h1 {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 30px; font-weight: 600; line-height: 1.35;
+  margin: 0 0 10px; text-wrap: balance;
+}
+.lede { color: var(--muted); max-width: 46em; margin: 0; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 18px; font-size: 12.5px; color: var(--muted); }
+.counts strong { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+nav.toc {
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  padding: 14px 0 22px; border-bottom: 1px solid var(--border-soft);
+  font-size: 12.5px;
+}
+nav.toc a { color: var(--accent-ink); text-decoration: none; border-bottom: 1px dotted var(--border); padding-bottom: 1px; }
+nav.toc a:hover, nav.toc a:focus-visible { border-bottom-color: var(--accent); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; margin: 22px 0 6px; font-size: 12px; color: var(--muted); }
+.legend .lgl { font-weight: 600; color: var(--ink); margin-right: 2px; }
+
+section { margin-top: 46px; }
+h2 {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 20px; font-weight: 600; margin: 0 0 4px;
+  padding-left: 12px; border-left: 3px solid var(--accent);
+  line-height: 1.4;
+}
+.secnote { color: var(--muted); font-size: 12.5px; margin: 4px 0 14px; max-width: 60em; }
+
+.tblwrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 860px; }
+th {
+  text-align: left; font-size: 11px; letter-spacing: .1em; font-weight: 600;
+  color: var(--muted); text-transform: uppercase;
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  background: var(--surface); white-space: nowrap;
+}
+td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border-soft);
+  vertical-align: top; font-size: 13px;
+}
+tr:last-child td { border-bottom: none; }
+td.skill { font-weight: 600; white-space: nowrap; }
+td.skill .ns { display: block; font-weight: 400; font-size: 11px; color: var(--muted); }
+td.skill.multi { white-space: normal; max-width: 190px; min-width: 150px; line-height: 1.6; }
+td.skill.multi .list { display: block; font-weight: 500; font-size: 12px; margin-top: 2px; }
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px; background: var(--code-bg);
+  padding: 1.5px 6px; border-radius: 4px; white-space: nowrap;
+}
+td.slash { max-width: 250px; }
+td.slash code { white-space: normal; word-break: break-word; display: inline-block; line-height: 1.6; }
+td.nl { color: var(--ink); min-width: 210px; }
+td.nl .warn { color: var(--muted); font-size: 12px; display: block; }
+td.team { min-width: 200px; }
+
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 1px 8px; border-radius: 3px; margin-bottom: 4px;
+  letter-spacing: .04em; white-space: nowrap;
+}
+.b-team { background: var(--team-bg); color: var(--team-fg); }
+.b-verify { background: var(--verify-bg); color: var(--verify-fg); }
+.b-router { background: var(--router-bg); color: var(--router-fg); }
+.b-solo { background: var(--solo-bg); color: var(--solo-fg); }
+.b-none { background: transparent; color: var(--none-fg); border: 1px dashed var(--border); }
+.team-desc { display: block; font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+.footnote { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 12.5px; max-width: 60em; }
+.footnote ul { margin: 8px 0 0; padding-left: 1.3em; }
+.footnote li { margin-bottom: 4px; }
+
+a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header class="site">
+  <p class="eyebrow">Claude Code — 業務 iOS アプリ開発環境の実例</p>
+  <h1>スキルカタログ:呼び出し方とエージェント構成</h1>
+  <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年7月時点)。社名・アプリ名などの固有情報は一般化している。</p>
+  <div class="counts">
+    <span>プロジェクト <strong>11</strong></span>
+    <span>グローバル <strong>2</strong></span>
+    <span>claude.ai 個人 <strong>11</strong></span>
+    <span>プラグイン <strong>約80+</strong></span>
+    <span>ハーネス組み込み <strong>16</strong></span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#project">1. プロジェクト</a>
+  <a href="#global">2. グローバル</a>
+  <a href="#personal">3. claude.ai 個人</a>
+  <a href="#claude-mem">4. claude-mem</a>
+  <a href="#context-mode">5. context-mode</a>
+  <a href="#docs">6. ドキュメント作成</a>
+  <a href="#slack">7. Slack</a>
+  <a href="#iosdev">8. iOS / 開発</a>
+  <a href="#builtin">9. ハーネス組み込み</a>
+  <a href="#legal">10. Legal 系</a>
+</nav>
+
+<div class="legend">
+  <span class="lgl">チーム構成の凡例:</span>
+  <span class="badge b-team">チーム</span><span>複数サブエージェントを並列/直列に起動</span>
+  <span class="badge b-verify">単独+検証</span><span>本体1名+独立の検証/校閲役</span>
+  <span class="badge b-router">ルーター</span><span>自身は判定のみで他スキルに委譲</span>
+  <span class="badge b-solo">単独</span><span>メインエージェント1名で完結</span>
+  <span class="badge b-none">エージェントなし</span><span>参照ドキュメント/単体起動しない</span>
+</div>
+
+<section id="project">
+  <h2>1. プロジェクトスキル(.claude/skills/)</h2>
+  <p class="secnote">リポジトリ専用の自作スキル。レビュー依頼は運用ルール上 /review-smart に一本化しており、review-and-fix / review-team-and-fix の直接使用は名指し時のみ。</p>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">review-smart</td>
+      <td class="slash"><code>/review-smart [commit-range | branch] [--base &lt;branch&gt;] [--normal | --team | --dry-run]</code></td>
+      <td class="nl">「レビューして」「feature/xxx をレビューして」— レビュー依頼はこの言い方だけで起動</td>
+      <td class="team"><span class="badge b-router">ルーター</span><span class="team-desc">自身は差分リスク判定のみ。判定結果に応じて review-and-fix(通常)か review-team-and-fix(チーム版)へ委譲</span></td>
+    </tr>
+    <tr>
+      <td class="skill">review-and-fix</td>
+      <td class="slash"><code>/review-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
+      <td class="nl">「review-and-fix で feature/xxx を見て」<span class="warn">※ スキル名を明示したときのみ直接起動</span></td>
+      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">単独レビュアー(オーケストレーター本体)がレビュー・修正・成果物作成まで実施+終了時に振り返り(Retrospective)サブエージェント1名</span></td>
+    </tr>
+    <tr>
+      <td class="skill">review-team-and-fix</td>
+      <td class="slash"><code>/review-team-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
+      <td class="nl">「レビューワーチームで feature/xxx をレビューして」<span class="warn">※ 名指し時のみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(9役)</span><span class="team-desc">Reviewer A〜F を並列起動(A: 要件・受け入れ条件/B: クラッシュ・メモリ・非同期/C: iOS互換性・UI・a11y/D: 外部依存・Context7/E: 既存影響・設計・テスタビリティ/F: エラー処理・ビルド・運用)→ Aggregator が統合 → Self-Critique が独立検証 → 本体が修正・成果物作成+振り返り</span></td>
+    </tr>
+    <tr>
+      <td class="skill">review-shared</td>
+      <td class="slash">(直接起動しない)</td>
+      <td class="nl">起動しない。直接依頼すると該当レビュースキルを案内</td>
+      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">レビュー3スキルが参照する共通手順集</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crashlytics-daily</td>
+      <td class="slash"><code>/crashlytics-daily</code></td>
+      <td class="nl">「今日のクラッシュ監視をやって」「過去24時間のクラッシュ状況を確認して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">Firebase MCP でデータ取得〜分類〜レポート保存まで1名で完結</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crashlytics-report</td>
+      <td class="slash"><code>/crashlytics-report &lt;期間&gt;</code></td>
+      <td class="nl">「6月分のクラッシュレポートを作って」「5/1〜5/31 の Top10 とクラッシュフリー率をまとめて」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crashlytics-analyze</td>
+      <td class="slash"><code>/crashlytics-analyze &lt;issue-id&gt;</code></td>
+      <td class="nl">「この Crashlytics issue を詳しく分析して」「issue xxx の根本原因を調べて」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">直接原因・根本原因・再現条件・影響範囲を1名で分析</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crashlytics-fix</td>
+      <td class="slash"><code>/crashlytics-fix &lt;issue-id&gt;</code></td>
+      <td class="nl">「issue xxx の分析結果をもとに修正して」「このクラッシュを直してテストも書いて」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">最小スコープ修正+ユニットテスト適用</span></td>
+    </tr>
+    <tr>
+      <td class="skill">plan-review</td>
+      <td class="slash"><code>/plan-review [企画書パス(md/PDF/pptx/画像・複数可) | Redmineチケット番号]</code></td>
+      <td class="nl">「この企画書に意見書を出して」「チケット #xxxx の企画をレビューして」(テキスト貼り付けも可)</td>
+      <td class="team"><span class="badge b-team">チーム(8役)</span><span class="team-desc">Expert A〜F を並列起動(A: 要件定義/B: 仕様整合性/C: 実装可能性・アーキテクチャ/D: 規模見積もり・フェーズ分割/E: UX・既存導線/F: リスク・審査)→ 本体が統合 → 独立検証役サブエージェント+振り返り</span></td>
+    </tr>
+    <tr>
+      <td class="skill">dev-loop</td>
+      <td class="slash"><code>/dev-loop &lt;Redmineチケット番号&gt; [修正ループ上限回数]</code></td>
+      <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /dev-loop と打ったときのみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(ループ型)</span><span class="team-desc">オーケストレーターが QAエンジニア役・開発者役(同一コンテキストのロールプレイ)を進行し、レビューワーのみ独立サブエージェントとして起動。レビューNG→開発者へ差し戻す修正ループ(既定2回)を制御</span></td>
+    </tr>
+    <tr>
+      <td class="skill">release-history</td>
+      <td class="slash"><code>/release-history &lt;新タグ&gt; [&lt;前タグ&gt;]</code></td>
+      <td class="nl">「v1.2.3 の変更履歴を README に追記して」「リリースタグをもとに変更履歴を更新して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="global">
+  <h2>2. グローバルスキル(~/.claude/skills/)</h2>
+  <p class="secnote">全プロジェクト共通で使える自作の個人スキル。</p>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">competitor-weekly</td>
+      <td class="slash"><code>/competitor-weekly [比較対象レポートのパス]</code>(省略時 latest.md)</td>
+      <td class="nl">「競合レポートを作って」「週次の競合ウォッチを実行して」</td>
+      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">本体が情報収集〜差分レポート生成。検証(A)決定論スクリプト+検証(B)別モデル点検の二重ゲートを通過後にスライド(pptx)生成へ進む</span></td>
+    </tr>
+    <tr>
+      <td class="skill">qiita-series-editor</td>
+      <td class="slash"><code>/qiita-series-editor</code>(依頼内容は文章で指定)</td>
+      <td class="nl">「シリーズに編入して」「親記事を更新して」「シリーズを監査して」「次に書くべき記事は?」</td>
+      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">編集長(本体)が編入・監査・相談の3モードを判定。編入モードでは書き込み前に校閲サブエージェント(general-purpose)を必須で起動</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="personal">
+  <h2>3. claude.ai 個人スキル(anthropic-skills:)</h2>
+  <p class="secnote">デスクトップアプリ経由で同期される個人スキル群。全プロジェクトで利用可。</p>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">slack-tone-sano</td>
+      <td class="slash"><code>/anthropic-skills:slack-tone-sano</code></td>
+      <td class="nl">「この内容を自分らしい言い回しで Slack 下書きにして」「完了報告の Slack 文を作って」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">本人の文体プロファイル(my-slack-style.md)に従い変換する自作スキル</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crashlytics-morning-report</td>
+      <td class="slash"><code>/anthropic-skills:crashlytics-morning-report</code></td>
+      <td class="nl">「iOS 定例向けにクラッシュレポートをまとめて」「daily.md を PowerPoint にして」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">監視結果 Markdown 群から週次定例用 pptx を生成</span></td>
+    </tr>
+    <tr>
+      <td class="skill">humanizer</td>
+      <td class="slash"><code>/anthropic-skills:humanizer</code></td>
+      <td class="nl">「この文章の AI っぽさを消して」「自然な文章に直して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">consolidate-memory</td>
+      <td class="slash"><code>/anthropic-skills:consolidate-memory</code></td>
+      <td class="nl">「メモリを整理して」— 重複統合・古い情報の修正・インデックス削減</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">schedule</td>
+      <td class="slash"><code>/anthropic-skills:schedule</code></td>
+      <td class="nl">「毎朝9時に実行して」「1時間後にリマインドして」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">定期タスクの登録・更新(実行は登録先のスケジューラ)</span></td>
+    </tr>
+    <tr>
+      <td class="skill">setup-cowork</td>
+      <td class="slash"><code>/anthropic-skills:setup-cowork</code></td>
+      <td class="nl">「Cowork のセットアップをして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">docx / pdf / pptx / xlsx / skill-creator</td>
+      <td class="slash"><code>/anthropic-skills:docx</code> ほか</td>
+      <td class="nl">下記「6. ドキュメント作成系」と同機能(Word・PDF・スライド・Excel、スキル作成)</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">同梱スクリプトの実行が中心</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="claude-mem">
+  <h2>4. claude-mem(セッション横断メモリ・開発支援)</h2>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">mem-search</td>
+      <td class="slash"><code>/claude-mem:mem-search</code></td>
+      <td class="nl">「前にこれ解決しなかった?」「前回どうやったか探して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">過去セッションの観測データベースを検索</span></td>
+    </tr>
+    <tr>
+      <td class="skill">make-plan</td>
+      <td class="slash"><code>/claude-mem:make-plan</code></td>
+      <td class="nl">「この機能の実装計画を立てて」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">ドキュメント調査付きでフェーズ分割計画を作成</span></td>
+    </tr>
+    <tr>
+      <td class="skill">do</td>
+      <td class="slash"><code>/claude-mem:do</code></td>
+      <td class="nl">「その計画を実行して」「make-plan の計画を進めて」</td>
+      <td class="team"><span class="badge b-team">チーム</span><span class="team-desc">フェーズごとにサブエージェントを起動して計画を実行するオーケストレーター</span></td>
+    </tr>
+    <tr>
+      <td class="skill">learn-codebase</td>
+      <td class="slash"><code>/claude-mem:learn-codebase</code></td>
+      <td class="nl">「このコードベースを学習して」「プロジェクトを把握して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">全ソースファイルを読み込んでプライミング</span></td>
+    </tr>
+    <tr>
+      <td class="skill">smart-explore</td>
+      <td class="slash"><code>/claude-mem:smart-explore</code></td>
+      <td class="nl">「構造だけ効率よく調べて」— tree-sitter AST ベースの省トークン探索</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">babysit</td>
+      <td class="slash"><code>/claude-mem:babysit</code></td>
+      <td class="nl">「この PR がマージ可能になるまで見張って」</td>
+      <td class="team"><span class="badge b-solo">単独(常駐ループ)</span><span class="team-desc">レビューコメント・CI を解決まで監視し続ける</span></td>
+    </tr>
+    <tr>
+      <td class="skill">standup</td>
+      <td class="slash"><code>/claude-mem:standup</code></td>
+      <td class="nl">「worktree 間の変更を比較して統合計画を出して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">read-only で worktree / ブランチ / PR を横断比較</span></td>
+    </tr>
+    <tr>
+      <td class="skill">timeline-report</td>
+      <td class="slash"><code>/claude-mem:timeline-report</code></td>
+      <td class="nl">「このプロジェクトの開発史レポートを作って」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">weekly-digests</td>
+      <td class="slash"><code>/claude-mem:weekly-digests</code></td>
+      <td class="nl">「週ごとのダイジェストにして」「week-by-week で物語にして」</td>
+      <td class="team"><span class="badge b-team">チーム(直列)</span><span class="team-desc">ISO 週ごとに1サブエージェントを連続起動。前週の引き継ぎブロックを受け渡して章を執筆</span></td>
+    </tr>
+    <tr>
+      <td class="skill">what-the</td>
+      <td class="slash"><code>/claude-mem:what-the</code></td>
+      <td class="nl">「これ、平易な言葉で何がどうなってるのか説明して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">wowerpoint</td>
+      <td class="slash"><code>/claude-mem:wowerpoint</code></td>
+      <td class="nl">「このレポートをスライド PDF にして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">design-is</td>
+      <td class="slash"><code>/claude-mem:design-is</code></td>
+      <td class="nl">「このデザインを監査して」「この UI、良いデザインか批評して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">Rams の10原則で監査 → /make-plan への引き継ぎプロンプトを出力</span></td>
+    </tr>
+    <tr>
+      <td class="skill">pathfinder</td>
+      <td class="slash"><code>/claude-mem:pathfinder</code></td>
+      <td class="nl">「リファクタ前にアーキテクチャを監査して」「重複システムを統合する案を出して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">oh-my-issues</td>
+      <td class="slash"><code>/claude-mem:oh-my-issues</code></td>
+      <td class="nl">「GitHub issue の山を根本原因でまとめて」「issue をトリアージして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">knowledge-agent</td>
+      <td class="slash"><code>/claude-mem:knowledge-agent</code></td>
+      <td class="nl">「過去の作業からこのテーマのナレッジベースを作って」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">観測履歴から AI ナレッジベースを構築・照会</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">how-it-works / version-bump</td>
+      <td class="slash"><code>/claude-mem:how-it-works</code> ほか</td>
+      <td class="nl">「claude-mem って何してるの?」/「プラグインのバージョンを上げてリリースして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="context-mode">
+  <h2>5. context-mode(コンテキスト節約)</h2>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">context-mode</td>
+      <td class="slash">(自動適用)</td>
+      <td class="nl">「ログを分析して」「大きい出力を処理して」等で自動的にサンドボックス実行へ誘導</td>
+      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">MCP ツール群+フックによる挙動制御</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">ctx-stats / ctx-doctor / ctx-upgrade / ctx-purge / ctx-insight</td>
+      <td class="slash"><code>/context-mode:ctx-stats</code> ほか(「ctx stats」等の呼びかけでも可)</td>
+      <td class="nl">「今セッションでどれだけ節約できた?」「context-mode を診断して」「最新版に更新して」「ナレッジベースを全消去して(破壊的)」「分析ダッシュボードを開いて」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="docs">
+  <h2>6. ドキュメント作成系(Anthropic 公式 document-skills)</h2>
+  <p class="secnote">該当ファイル形式・依頼内容が絡めば自動起動する。いずれも同梱スクリプト実行が中心の単独構成。</p>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill multi">docx / xlsx / pptx / pdf</td>
+      <td class="slash">(ファイル形式で自動起動)</td>
+      <td class="nl">「Word でレポート作って」「この Excel に列を足して」「スライドにまとめて」「PDF を結合して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">canvas-design / algorithmic-art / brand-guidelines / theme-factory</td>
+      <td class="slash">(依頼内容で自動起動)</td>
+      <td class="nl">「ポスターをデザインして」「ジェネラティブアートを作って」「Anthropic ブランドで」「このスライドにテーマを当てて」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">frontend-design / web-artifacts-builder / webapp-testing</td>
+      <td class="slash">(依頼内容で自動起動)</td>
+      <td class="nl">「テンプレっぽくない UI にして」「React+shadcn でアーティファクトを作って」「ローカルの Web アプリを Playwright でテストして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">doc-coauthoring / internal-comms / mcp-builder / skill-creator / claude-api / slack-gif-creator</td>
+      <td class="slash">(依頼内容で自動起動)</td>
+      <td class="nl">「仕様書を一緒に書いて」「社内報告を書いて」「MCP サーバーを作って」「スキルを作って」「Claude API の料金は?」「Slack 用 GIF を作って」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">claude-api は参照ドキュメント(エージェントなし)</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="slack">
+  <h2>7. Slack プラグイン</h2>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill multi">summarize-channel / channel-digest / find-discussions</td>
+      <td class="slash"><code>/slack:summarize-channel</code> ほか</td>
+      <td class="nl">「#dev-team の最近の動きをまとめて」「複数チャンネルのダイジェストを作って」「〇〇の議論を探して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">standup / draft-announcement</td>
+      <td class="slash"><code>/slack:standup</code> ほか</td>
+      <td class="nl">「自分の Slack アクティビティから朝会用の報告を作って」「アナウンス文を下書きして」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">draft-announcement は下書き保存まで(投稿は人間)</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">block-kit / slack-api / slack-cli / create-slack-app / slack-messaging / slack-search</td>
+      <td class="slash"><code>/slack:block-kit</code> ほか</td>
+      <td class="nl">Slack アプリ開発者向け:「この Block Kit JSON を直して」「chat.postMessage のスコープは?」「Slack CLI でアプリを作って」等</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="iosdev">
+  <h2>8. iOS / 開発ワークフロー系プラグイン</h2>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">app-store-review</td>
+      <td class="slash"><code>/app-store-review:app-store-review</code></td>
+      <td class="nl">「App Store 審査に通るかチェックして」「リジェクトリスクを洗い出して」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">App Store Review ガイドラインとコードを照合</span></td>
+    </tr>
+    <tr>
+      <td class="skill">feature-dev</td>
+      <td class="slash"><code>/feature-dev:feature-dev</code></td>
+      <td class="nl">「この機能をガイド付きで開発して」</td>
+      <td class="team"><span class="badge b-team">チーム(3職種)</span><span class="team-desc">code-explorer(既存コード調査)→ code-architect(設計ブループリント)→ 実装 → code-reviewer(信頼度フィルタ付きレビュー)を段階的に起動</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">engineering:<span class="list">architecture / code-review / debug / deploy-checklist / documentation / incident-response / standup / system-design / tech-debt / testing-strategy</span></td>
+      <td class="slash"><code>/engineering:debug</code> ほか</td>
+      <td class="nl">「アーキテクチャ相談に乗って」「デバッグを手伝って」「デプロイ前チェックリストを」「インシデント対応して」等</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">汎用エンジニアリング支援の型を提供</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="builtin">
+  <h2>9. ハーネス組み込みスキル(Claude Code 本体)</h2>
+  <div class="tblwrap"><table>
+    <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">deep-research</td>
+      <td class="slash"><code>/deep-research &lt;調査テーマ&gt;</code></td>
+      <td class="nl">「〇〇について徹底的に調査してレポートにして」</td>
+      <td class="team"><span class="badge b-team">チーム(可変)</span><span class="team-desc">Web 検索エージェントをファンアウト → ソース読込 → 主張の敵対的検証 → 引用付きレポートに統合(Workflow ベース)</span></td>
+    </tr>
+    <tr>
+      <td class="skill">code-review</td>
+      <td class="slash"><code>/code-review [low〜max] [--comment | --fix]</code></td>
+      <td class="nl">「この差分をレビューして」<span class="warn">※ この環境では /review-smart が正。名指し時のみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(可変)</span><span class="team-desc">エフォートに応じて観点別レビュアーを並列起動し、検証パスで確度を確認</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">security-review / review / simplify</td>
+      <td class="slash"><code>/security-review</code> ほか</td>
+      <td class="nl">「セキュリティ観点で見て」「変更をシンプルにして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">verify / run</td>
+      <td class="slash"><code>/verify</code> / <code>/run</code></td>
+      <td class="nl">「この変更が実際に動くか確認して」「アプリを起動してスクショ撮って」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">変更したフローを end-to-end で駆動して観察</span></td>
+    </tr>
+    <tr>
+      <td class="skill">loop / schedule</td>
+      <td class="slash"><code>/loop [間隔] &lt;プロンプト&gt;</code> / <code>/schedule</code></td>
+      <td class="nl">「5分ごとに /foo を実行して」「毎朝これを実行するクラウドエージェントを作って」</td>
+      <td class="team"><span class="badge b-solo">単独(スケジューラ)</span><span class="team-desc">繰り返し/定期実行の登録・自己ペース制御</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">update-config / keybindings-help / fewer-permission-prompts</td>
+      <td class="slash"><code>/update-config</code> ほか</td>
+      <td class="nl">「npm コマンドを許可して」「キーバインドを変えたい」「許可プロンプトを減らして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">dataviz / artifact-design / claude-api</td>
+      <td class="slash">(自動参照)</td>
+      <td class="nl">チャート作成・アーティファクト作成・Claude API 関連の作業時に自動で読み込まれるガイド</td>
+      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">参照ドキュメント</span></td>
+    </tr>
+    <tr>
+      <td class="skill">init</td>
+      <td class="slash"><code>/init</code></td>
+      <td class="nl">「このプロジェクトの CLAUDE.md を初期化して」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<section id="legal">
+  <h2>10. Claude for Legal 系(参考)</h2>
+  <p class="secnote">7プラグイン・計60超のスキル。法務業務向けのため代表例のみ。多くは MCP サーバー(契約管理・ストレージ・電子署名サービス等)の認証完了後でないと実質機能しない。</p>
+  <div class="tblwrap"><table>
+    <tr><th>プラグイン</th><th>スラッシュ形式(代表)</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">legal</td>
+      <td class="slash"><code>/legal:review-contract</code> ほか(brief / compliance-check / legal-response / triage-nda 等 9種)</td>
+      <td class="nl">「この契約書をレビューして」「NDA をトリアージして」</td>
+      <td class="team"><span class="badge b-solo">単独</span></td>
+    </tr>
+    <tr>
+      <td class="skill">commercial-legal</td>
+      <td class="slash"><code>/commercial-legal:nda-review</code> ほか(saas-msa-review / renewal-tracker 等 11種)</td>
+      <td class="nl">「MSA の逸脱箇所を確認して」「更新期限をまとめて」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">別枠で定期実行エージェント(deal-debrief / playbook-monitor / renewal-watcher)あり</span></td>
+    </tr>
+    <tr>
+      <td class="skill multi">product-legal / regulatory-legal / ai-governance-legal / privacy-legal / ip-legal</td>
+      <td class="slash"><code>/privacy-legal:dpa-review</code> ほか(各 7〜12種)</td>
+      <td class="nl">「機能リリースの法務リスクを評価して」「DPA をレビューして」「特許クリアランスを」等</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">launch-watcher / reg-change-monitor / ip-renewal-watcher 等の定期実行エージェントを併設</span></td>
+    </tr>
+  </table></div>
+</section>
+
+<div class="footnote">
+  <strong>補足</strong>
+  <ul>
+    <li>公開用に、社名・アプリ名・社内チャンネル名などの固有情報は一般化している。スキル名・構成・使い方は実運用のまま。</li>
+    <li>自然言語での起動は、各スキルの description と依頼文のマッチングで判定されるため、記載の例は代表例。確実に狙ったスキルを起動したい場合はスラッシュ形式が確実。</li>
+    <li>レビュー系はどのスキルを名指ししても、運用ルール上この環境では <code>/review-smart</code> が入口の正となる。</li>
+    <li>「チーム構成」はスキル定義(SKILL.md / orchestrator.md)の記述に基づく。プラグイン製スキルの一部は説明文からの推定を含む。</li>
+  </ul>
+</div>
+</div>
+
+</html>
