@@ -158,7 +158,7 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
   <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年7月時点)。社名・アプリ名などの固有情報は一般化している。</p>
   <div class="counts">
     <span>プロジェクト <strong>11</strong></span>
-    <span>グローバル <strong>2</strong></span>
+    <span>グローバル <strong>3</strong></span>
     <span>claude.ai 個人 <strong>11</strong></span>
     <span>プラグイン <strong>約80+</strong></span>
     <span>ハーネス組み込み <strong>16</strong></span>
@@ -277,6 +277,12 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="slash"><code>/qiita-series-editor</code>(依頼内容は文章で指定)</td>
       <td class="nl">「シリーズに編入して」「親記事を更新して」「シリーズを監査して」「次に書くべき記事は?」</td>
       <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">編集長(本体)が編入・監査・相談の3モードを判定。編入モードでは書き込み前に校閲サブエージェント(general-purpose)を必須で起動</span></td>
+    </tr>
+    <tr>
+      <td class="skill">crash-rca</td>
+      <td class="slash"><code>/crash-rca &lt;Redmineチケット番号&gt;</code></td>
+      <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /crash-rca と打ったときのみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(7役・逐次)</span><span class="team-desc">Redmineチケット起点のクラッシュ根本原因調査(iOS・完全読み取り専用)。オーケストレーター本体が専用サブエージェント6体を逐次起動: ticket-analyst(チケット事実確認)→ crashlytics-analyst(issue・stack trace分析)→ code-mapper(stack traceとコード照合)→ hypothesis-builder(原因仮説)→ falsifier(独立反証)→ reporter(レポート統合)。仮説を作る者と反証する者を別エージェントに分離</span></td>
     </tr>
   </table></div>
 </section>
