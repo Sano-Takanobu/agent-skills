@@ -280,9 +280,9 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
     </tr>
     <tr>
       <td class="skill">crash-rca</td>
-      <td class="slash"><code>/crash-rca &lt;Redmineチケット番号&gt;</code></td>
+      <td class="slash"><code>/crash-rca &lt;Redmineチケット番号 | Crashlytics issue URL&gt;</code></td>
       <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /crash-rca と打ったときのみ</span></td>
-      <td class="team"><span class="badge b-team">チーム(7役・逐次)</span><span class="team-desc">Redmineチケット起点のクラッシュ根本原因調査(iOS・完全読み取り専用)。オーケストレーター本体が専用サブエージェント6体を逐次起動: ticket-analyst(チケット事実確認)→ crashlytics-analyst(issue・stack trace分析)→ code-mapper(stack traceとコード照合)→ hypothesis-builder(原因仮説)→ falsifier(独立反証)→ reporter(レポート統合)。仮説を作る者と反証する者を別エージェントに分離</span></td>
+      <td class="team"><span class="badge b-team">チーム(6〜7役・逐次)</span><span class="team-desc">Redmineチケット または Crashlytics issue URL 起点のクラッシュ根本原因調査(iOS・完全読み取り専用)。オーケストレーター本体が専用サブエージェントを逐次起動: ticket-analyst(チケット事実確認・<em>Redmine起点のみ</em>)→ crashlytics-analyst(issue・stack trace分析)→ code-mapper(stack traceとコード照合)→ hypothesis-builder(原因仮説)→ falsifier(独立反証)→ reporter(レポート統合)。Crashlytics URL 起点ではチケット確認を省き、URL から抽出した issue ID(sessionEventKey も活用)の深掘りから開始する。仮説を作る者と反証する者を別エージェントに分離</span></td>
     </tr>
   </table></div>
 </section>
