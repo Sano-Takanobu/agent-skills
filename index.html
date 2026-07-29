@@ -157,8 +157,8 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
   <h1>スキルカタログ:呼び出し方とエージェント構成</h1>
   <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年7月時点)。社名・アプリ名などの固有情報は一般化している。</p>
   <div class="counts">
-    <span>プロジェクト <strong>11</strong></span>
-    <span>グローバル <strong>3</strong></span>
+    <span>プロジェクト <strong>12</strong></span>
+    <span>グローバル <strong>4</strong></span>
     <span>claude.ai 個人 <strong>11</strong></span>
     <span>プラグイン <strong>約80+</strong></span>
     <span>ハーネス組み込み <strong>16</strong></span>
@@ -189,32 +189,38 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
 
 <section id="project">
   <h2>1. プロジェクトスキル(.claude/skills/)</h2>
-  <p class="secnote">リポジトリ専用の自作スキル。レビュー依頼は運用ルール上 /review-smart に一本化しており、review-and-fix / review-team-and-fix の直接使用は名指し時のみ。</p>
+  <p class="secnote">リポジトリ専用の自作スキル。レビュー依頼は運用ルール上 /review-smart に一本化しており、review-and-fix / review-team-and-fix / review-adversarial の直接使用は名指し時のみ。</p>
   <div class="tblwrap"><table>
     <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
     <tr>
       <td class="skill">review-smart</td>
       <td class="slash"><code>/review-smart [commit-range | branch] [--base &lt;branch&gt;] [--normal | --team | --dry-run]</code></td>
       <td class="nl">「レビューして」「feature/xxx をレビューして」— レビュー依頼はこの言い方だけで起動</td>
-      <td class="team"><span class="badge b-router">ルーター</span><span class="team-desc">自身は差分リスク判定のみ。判定結果に応じて review-and-fix(通常)か review-team-and-fix(チーム版)へ委譲</span></td>
+      <td class="team"><span class="badge b-router">ルーター</span><span class="team-desc">自身はルーティング判定とリスク階層(低・中・高)の判定のみ。review-and-fix(通常)か review-team-and-fix(チーム版)へ委譲し、高リスク差分(認証・課金・データ削除・同期・移行・非同期・クラッシュ修正・セキュリティ等)には敵対的レビュー3体を委譲先の工程に注入</span></td>
     </tr>
     <tr>
       <td class="skill">review-and-fix</td>
       <td class="slash"><code>/review-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
       <td class="nl">「review-and-fix で feature/xxx を見て」<span class="warn">※ スキル名を明示したときのみ直接起動</span></td>
-      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">単独レビュアー(オーケストレーター本体)がレビュー・修正・成果物作成まで実施+終了時に振り返り(Retrospective)サブエージェント1名</span></td>
+      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">単独レビュアー(オーケストレーター本体)がレビュー・修正・成果物作成まで実施+終了時に振り返り(Retrospective)サブエージェント1名。review-smart 経由で高リスク判定の場合はレビュー後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
     </tr>
     <tr>
       <td class="skill">review-team-and-fix</td>
       <td class="slash"><code>/review-team-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
       <td class="nl">「レビューワーチームで feature/xxx をレビューして」<span class="warn">※ 名指し時のみ</span></td>
-      <td class="team"><span class="badge b-team">チーム(9役)</span><span class="team-desc">Reviewer A〜F を並列起動(A: 要件・受け入れ条件/B: クラッシュ・メモリ・非同期/C: iOS互換性・UI・a11y/D: 外部依存・Context7/E: 既存影響・設計・テスタビリティ/F: エラー処理・ビルド・運用)→ Aggregator が統合 → Self-Critique が独立検証 → 本体が修正・成果物作成+振り返り</span></td>
+      <td class="team"><span class="badge b-team">チーム(9役)</span><span class="team-desc">Reviewer A〜F を並列起動(A: 要件・受け入れ条件/B: クラッシュ・メモリ・非同期/C: iOS互換性・UI・a11y/D: 外部依存・Context7/E: 既存影響・設計・テスタビリティ/F: エラー処理・ビルド・運用)→ Aggregator が統合 → Self-Critique が独立検証 → 本体が修正・成果物作成+振り返り。review-smart 経由で高リスク判定の場合は Self-Critique 後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
+    </tr>
+    <tr>
+      <td class="skill">review-adversarial</td>
+      <td class="slash"><code>/review-adversarial &lt;commit-range | commit-hash | branch&gt; [--base &lt;branch&gt;]</code></td>
+      <td class="nl">「敵対的レビューだけかけて」「この差分の破綻シナリオを探して」<span class="warn">※ 敵対的レビューを明示したときのみ。review-smart 経由の高リスク差分では同じ工程が自動注入されるため、このスキルは起動しない</span></td>
+      <td class="team"><span class="badge b-team">チーム(3役+検証)</span><span class="team-desc">読み取り専用の敵対的レビュアー3体を並列起動(1: 要件・仕様破綻/2: 異常系・境界値・非同期・クラッシュ/3: セキュリティ・認証・データ破損・機密情報)→ 本体が統合・根拠の弱い指摘を除外 → Blocking(重大/高)が残る場合のみ既存の修正フローへ差し戻し+振り返り</span></td>
     </tr>
     <tr>
       <td class="skill">review-shared</td>
       <td class="slash">(直接起動しない)</td>
       <td class="nl">起動しない。直接依頼すると該当レビュースキルを案内</td>
-      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">レビュー3スキルが参照する共通手順集</span></td>
+      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">レビュー4スキルが参照する共通手順集(敵対的レビュー共通工程 adversarial.md を含む)</span></td>
     </tr>
     <tr>
       <td class="skill">crashlytics-daily</td>
@@ -266,6 +272,12 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
   <p class="secnote">全プロジェクト共通で使える自作の個人スキル。</p>
   <div class="tblwrap"><table>
     <tr><th>スキル</th><th>スラッシュ形式</th><th>自然言語での依頼例</th><th>AIエージェントチーム構成</th></tr>
+    <tr>
+      <td class="skill">agent-ops-weekly</td>
+      <td class="slash"><code>/agent-ops-weekly [--since YYYY-MM-DD]</code></td>
+      <td class="nl">「棚卸しして」「agent-ops レビュー」「週次棚卸し」</td>
+      <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">レビュー系・plan-review・dev-loop・crash-rca の自己改善データ(学習候補・提案カード・Phase)を週次で棚卸しし、昇格・採否をユーザー承認のもとで反映</span></td>
+    </tr>
     <tr>
       <td class="skill">competitor-weekly</td>
       <td class="slash"><code>/competitor-weekly [比較対象レポートのパス]</code>(省略時 latest.md)</td>
@@ -627,7 +639,7 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
   <ul>
     <li>公開用に、社名・アプリ名・社内チャンネル名などの固有情報は一般化している。スキル名・構成・使い方は実運用のまま。</li>
     <li>自然言語での起動は、各スキルの description と依頼文のマッチングで判定されるため、記載の例は代表例。確実に狙ったスキルを起動したい場合はスラッシュ形式が確実。</li>
-    <li>レビュー系はどのスキルを名指ししても、運用ルール上この環境では <code>/review-smart</code> が入口の正となる。</li>
+    <li>レビュー依頼の入口は運用ルール上 <code>/review-smart</code> が正。各レビュースキル(review-and-fix / review-team-and-fix / review-adversarial)は名指し時のみ直接起動する。</li>
     <li>「チーム構成」はスキル定義(SKILL.md / orchestrator.md)の記述に基づく。プラグイン製スキルの一部は説明文からの推定を含む。</li>
   </ul>
 </div>
