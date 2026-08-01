@@ -155,10 +155,10 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
 <header class="site">
   <p class="eyebrow">Claude Code — 業務 iOS アプリ開発環境の実例</p>
   <h1>スキルカタログ:呼び出し方とエージェント構成</h1>
-  <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年7月時点)。社名・アプリ名などの固有情報は一般化している。</p>
+  <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年8月時点)。社名・アプリ名などの固有情報は一般化している。</p>
   <div class="counts">
     <span>プロジェクト <strong>12</strong></span>
-    <span>グローバル <strong>4</strong></span>
+    <span>グローバル <strong>5</strong></span>
     <span>claude.ai 個人 <strong>11</strong></span>
     <span>プラグイン <strong>約80+</strong></span>
     <span>ハーネス組み込み <strong>16</strong></span>
@@ -295,6 +295,12 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="slash"><code>/crash-rca &lt;Redmineチケット番号 | Crashlytics issue URL&gt;</code></td>
       <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /crash-rca と打ったときのみ</span></td>
       <td class="team"><span class="badge b-team">チーム(6〜7役・逐次)</span><span class="team-desc">Redmineチケット または Crashlytics issue URL 起点のクラッシュ根本原因調査(iOS・完全読み取り専用)。オーケストレーター本体が専用サブエージェントを逐次起動: ticket-analyst(チケット事実確認・<em>Redmine起点のみ</em>)→ crashlytics-analyst(issue・stack trace分析)→ code-mapper(stack traceとコード照合)→ hypothesis-builder(原因仮説)→ falsifier(独立反証)→ reporter(レポート統合)。Crashlytics URL 起点ではチケット確認を省き、URL から抽出した issue ID(sessionEventKey も活用)の深掘りから開始する。仮説を作る者と反証する者を別エージェントに分離</span></td>
+    </tr>
+    <tr>
+      <td class="skill">work-intake</td>
+      <td class="slash"><code>/work-intake &lt;SlackメッセージまたはスレッドURL&gt;</code></td>
+      <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /work-intake と打ったときのみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(2〜4役)</span><span class="team-desc">Slack 上の相談・不具合報告・調査依頼の受付窓口(完全読み取り専用)。専用サブエージェントを起動: thread-reader(スレッド収集)→ link-reader(Redmine・GitHub・資料リンクの確認)。判断に必要な場合のみ Explore 最大2体で影響範囲を補足調査。事実・推測・未確認事項・影響範囲・担当領域・チケット化要否を「受付票」に整理し、既存スキル(review-smart / crash-rca / plan-review / dev-loop 等)への推奨コマンド、または該当スキルが無い場合の Redmine 起票文案を提示する。後続スキルは自動起動せず、推奨コマンドの提示まで(Slack 投稿・チケット更新・コード変更もしない)</span></td>
     </tr>
   </table></div>
 </section>
