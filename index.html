@@ -256,7 +256,7 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="skill">dev-loop</td>
       <td class="slash"><code>/dev-loop &lt;Redmineチケット番号&gt; [修正ループ上限回数]</code></td>
       <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /dev-loop と打ったときのみ</span></td>
-      <td class="team"><span class="badge b-team">チーム(ループ型)</span><span class="team-desc">オーケストレーターが QAエンジニア役・開発者役(同一コンテキストのロールプレイ)を進行し、レビューワーのみ独立サブエージェントとして起動。レビューNG→開発者へ差し戻す修正ループ(既定2回)を制御</span></td>
+      <td class="team"><span class="badge b-team">チーム(ループ型・ゲート付き)</span><span class="team-desc">オーケストレーターが QAエンジニア役・開発者役(同一コンテキストのロールプレイ)を進行し、<em>設計者とレビューワーは独立サブエージェント</em>として起動。設計者は仕様解釈を「明記/推論/仮定」に全件分類した設計プランを作成し、オーケストレーターが<em>実装前ゲート</em>で判定する。設計・API・データモデル・ユーザー可視の挙動を左右する「仮定」が残る場合はコードを書かせずに人間判断へ回す。ゲート通過後の実装はプラン準拠(解釈に関わる逸脱は停止・軽微な逸脱は逸脱ログへ記録)。レビューNG→開発者へ差し戻す修正ループ(既定2回)を制御</span></td>
     </tr>
     <tr>
       <td class="skill">release-history</td>
