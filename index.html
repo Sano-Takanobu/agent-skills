@@ -202,25 +202,25 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="skill">review-and-fix</td>
       <td class="slash"><code>/review-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
       <td class="nl">「review-and-fix で feature/xxx を見て」<span class="warn">※ スキル名を明示したときのみ直接起動</span></td>
-      <td class="team"><span class="badge b-verify">単独+検証</span><span class="team-desc">単独レビュアー(オーケストレーター本体)がレビュー・修正・成果物作成まで実施+終了時に振り返り(Retrospective)サブエージェント1名。review-smart 経由で高リスク判定の場合はレビュー後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
+      <td class="team"><span class="badge b-verify">単独+検証2種</span><span class="team-desc">単独レビュアー(オーケストレーター本体)がレビュー・修正・成果物作成まで実施+独立サブエージェント2名(成果物の<em>読者視点レビュー</em>1名、終了時の振り返り(Retrospective)1名)。review-smart 経由で高リスク判定の場合はレビュー後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
     </tr>
     <tr>
       <td class="skill">review-team-and-fix</td>
       <td class="slash"><code>/review-team-and-fix &lt;commit-range | branch&gt; [--base &lt;branch&gt;]</code></td>
       <td class="nl">「レビューワーチームで feature/xxx をレビューして」<span class="warn">※ 名指し時のみ</span></td>
-      <td class="team"><span class="badge b-team">チーム(9役)</span><span class="team-desc">Reviewer A〜F を並列起動(A: 要件・受け入れ条件/B: クラッシュ・メモリ・非同期/C: iOS互換性・UI・a11y/D: 外部依存・Context7/E: 既存影響・設計・テスタビリティ/F: エラー処理・ビルド・運用)→ Aggregator が統合 → Self-Critique が独立検証 → 本体が修正・成果物作成+振り返り。review-smart 経由で高リスク判定の場合は Self-Critique 後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
+      <td class="team"><span class="badge b-team">チーム(10役)</span><span class="team-desc">Reviewer A〜F を並列起動(A: 要件・受け入れ条件/B: クラッシュ・メモリ・非同期/C: iOS互換性・UI・a11y/D: 外部依存・Context7/E: 既存影響・設計・テスタビリティ/F: エラー処理・ビルド・運用)→ Aggregator が統合 → Self-Critique が独立検証 → 本体が修正・成果物作成 → <em>読者視点レビュー</em>が成果物を検証 → 振り返り。review-smart 経由で高リスク判定の場合は Self-Critique 後に敵対的レビュー3体(読み取り専用)が注入される</span></td>
     </tr>
     <tr>
       <td class="skill">review-adversarial</td>
       <td class="slash"><code>/review-adversarial &lt;commit-range | commit-hash | branch&gt; [--base &lt;branch&gt;]</code></td>
       <td class="nl">「敵対的レビューだけかけて」「この差分の破綻シナリオを探して」<span class="warn">※ 敵対的レビューを明示したときのみ。review-smart 経由の高リスク差分では同じ工程が自動注入されるため、このスキルは起動しない</span></td>
-      <td class="team"><span class="badge b-team">チーム(3役+検証)</span><span class="team-desc">読み取り専用の敵対的レビュアー3体を並列起動(1: 要件・仕様破綻/2: 異常系・境界値・非同期・クラッシュ/3: セキュリティ・認証・データ破損・機密情報)→ 本体が統合・根拠の弱い指摘を除外 → Blocking(重大/高)が残る場合のみ既存の修正フローへ差し戻し+振り返り</span></td>
+      <td class="team"><span class="badge b-team">チーム(3役+検証2種)</span><span class="team-desc">読み取り専用の敵対的レビュアー3体を並列起動(1: 要件・仕様破綻/2: 異常系・境界値・非同期・クラッシュ/3: セキュリティ・認証・データ破損・機密情報)→ 本体が統合・根拠の弱い指摘を除外 → Blocking(重大/高)が残る場合のみ既存の修正フローへ差し戻し → 成果物を<em>読者視点レビュー</em>が検証 → 振り返り</span></td>
     </tr>
     <tr>
       <td class="skill">review-shared</td>
       <td class="slash">(直接起動しない)</td>
       <td class="nl">起動しない。直接依頼すると該当レビュースキルを案内</td>
-      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">レビュー4スキルが参照する共通手順集(敵対的レビュー共通工程 adversarial.md を含む)</span></td>
+      <td class="team"><span class="badge b-none">エージェントなし</span><span class="team-desc">レビュー4スキルが参照する共通手順集。敵対的レビュー共通工程(adversarial.md)と、成果物の様式・作成後の2層検証(deliverables.md)を含む。<em>2層検証</em>= 層1: 形式ルールの機械チェック(ID連番・用語集カバレッジ・曖昧表現/相対比較の残存等)、層2: 読者視点レビュー。層2は<strong>チケット・コード差分・レビュー結果を渡さず成果物ファイルだけを読ませる</strong>ことで、外部読者(テスト会社のテスト設計者)の前提知識ゼロの状態を再現し、作成者側では気づけない欠落を検出する</span></td>
     </tr>
     <tr>
       <td class="skill">crashlytics-daily</td>
