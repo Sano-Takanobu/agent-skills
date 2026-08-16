@@ -157,7 +157,7 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
   <h1>スキルカタログ:呼び出し方とエージェント構成</h1>
   <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年8月時点)。社名・アプリ名などの固有情報は一般化している。</p>
   <div class="counts">
-    <span>プロジェクト <strong>12</strong></span>
+    <span>プロジェクト <strong>13</strong></span>
     <span>グローバル <strong>5</strong></span>
     <span>claude.ai 個人 <strong>11</strong></span>
     <span>プラグイン <strong>約80+</strong></span>
@@ -245,6 +245,12 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="slash"><code>/crashlytics-fix &lt;issue-id&gt;</code></td>
       <td class="nl">「issue xxx の分析結果をもとに修正して」「このクラッシュを直してテストも書いて」</td>
       <td class="team"><span class="badge b-solo">単独</span><span class="team-desc">最小スコープ修正+ユニットテスト適用</span></td>
+    </tr>
+    <tr>
+      <td class="skill">ga-audit</td>
+      <td class="slash"><code>/ga-audit [出力先ディレクトリ(省略可)]</code></td>
+      <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /ga-audit と打ったときのみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(7役)</span><span class="team-desc">アプリの計測実装(Google Analytics / Firebase Analytics)を<em>ローカルのソースコードだけ</em>を根拠に棚卸しする監査スキル(完全読み取り専用・管理画面/MCP/Web検索は不使用、リポジトリは非改変)。専用サブエージェントを段階起動: sdk-scout(分析SDK・ラッパー層・ユーザープロパティ)+ event-cataloger(イベント定義と全呼び出し箇所の<em>機械的列挙のみ</em>・解釈は禁止 → JSON)を並列 → flow-analyst 複数体(担当イベントを明示分割し、意味・トリガー・送信条件・呼び出し経路を並列分析)+ quality-auditor(未使用・重複・命名揺れ・計測漏れ・パラメータ不整合・PII懸念)→ <em>verifier</em>(独立検証)→ business-strategist(ファネル・KPI・セグメント軸への非エンジニア向け翻訳)→ reporter(検索・絞り込み・印刷対応の単一HTMLレポート生成)。verifier は<strong>成果物を見る前に別の grep パターンで一覧を再導出</strong>して突き合わせ、根拠の パス:行番号 を実際に開いて裏取りし、秘密情報・個人情報の混入を機械検査したうえで、修正指示を<em>機械適用可能な JSON</em>で返す(オーケストレーターは判断せず適用のみ)。全記述は 確認済み/推定/改善提案/要確認 の4分類タグ付きで、実データなしに効果・数値を断定しない</span></td>
     </tr>
     <tr>
       <td class="skill">plan-review</td>
