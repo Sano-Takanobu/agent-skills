@@ -197,10 +197,10 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
 <header class="site">
   <p class="eyebrow">Claude Code — 業務 iOS アプリ開発環境の実例</p>
   <h1>スキルカタログ:呼び出し方とエージェント構成</h1>
-  <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年8月時点)。社名・アプリ名などの固有情報は一般化している。</p>
+  <p class="lede">ある業務 iOS アプリ開発リポジトリで実際に運用しているスキル構成の一覧。プロジェクト・グローバル・プラグイン由来の全スキルを、スラッシュ形式/自然言語での依頼例/内部の AI エージェントチーム構成とあわせて整理したリファレンス(2026年10月時点)。社名・アプリ名などの固有情報は一般化している。</p>
   <div class="counts">
     <span>プロジェクト <strong>14</strong></span>
-    <span>グローバル <strong>5</strong></span>
+    <span>グローバル <strong>6</strong></span>
     <span>claude.ai 個人 <strong>11</strong></span>
     <span>プラグイン <strong>約80+</strong></span>
     <span>ハーネス組み込み <strong>16</strong></span>
@@ -350,6 +350,12 @@ a:focus-visible, code:focus-visible { outline: 2px solid var(--accent); outline-
       <td class="slash"><code>/crash-rca &lt;Redmineチケット番号 | Crashlytics issue URL&gt;</code></td>
       <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /crash-rca と打ったときのみ</span></td>
       <td class="team"><span class="badge b-team">チーム(6〜7役・逐次)</span><span class="team-desc">Redmineチケット または Crashlytics issue URL 起点のクラッシュ根本原因調査(iOS・完全読み取り専用)。オーケストレーター本体が専用サブエージェントを逐次起動: ticket-analyst(チケット事実確認・<em>Redmine起点のみ</em>)→ crashlytics-analyst(issue・stack trace分析)→ code-mapper(stack traceとコード照合)→ hypothesis-builder(原因仮説)→ falsifier(独立反証)→ reporter(レポート統合)。Crashlytics URL 起点ではチケット確認を省き、URL から抽出した issue ID(sessionEventKey も活用)の深掘りから開始する。仮説を作る者と反証する者を別エージェントに分離</span></td>
+    </tr>
+    <tr>
+      <td class="skill">ios-bug-triage</td>
+      <td class="slash"><code>/ios-bug-triage &lt;Redmine チケット URL&gt; [--no-publish]</code></td>
+      <td class="nl"><span class="warn">自然言語では起動しない(disable-model-invocation)。明示的に /ios-bug-triage と打ったときのみ</span></td>
+      <td class="team"><span class="badge b-team">チーム(6役・逐次)</span><span class="team-desc">Redmine チケット URL 起点の iOS 不具合調査(表示崩れ・誤動作などクラッシュ以外も対象。リポジトリ読み取り専用・実機未再現)。オーケストレーター本体が Redmine(MCP)と既存ブラウザ(chrome-devtools)でチケット本文・添付画像を取得し、専用サブエージェントを逐次起動: ticket-analyst(事実整理・分類・再現条件の抽出)→ code-investigator(症状から画面・UI 部品・到達経路・変更履歴を特定)→ hypothesis-builder(根本原因仮説)→ falsifier(独立反証)→ fix-planner(修正案の差分スケッチ・影響範囲・回帰テスト計画。適用はしない)→ reporter(レポートと Redmine コメント案)。予算(反復 2・サブエージェント 10 回・45 分)と停止条件 S1〜S6 で打ち切る。ユーザー承認後にのみ既存ブラウザで Redmine にレポート添付とコメント投稿(--no-publish でローカル保存のみ)。crash-rca と同じ Orchestrator 方式で、仮説を作る者と反証する者を分離</span></td>
     </tr>
     <tr>
       <td class="skill">work-intake</td>
